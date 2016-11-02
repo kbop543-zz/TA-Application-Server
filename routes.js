@@ -16,7 +16,7 @@ exports.findAll = function(req, res) {
 
 exports.findByStatus = function(req, res) {
     var status = req.params.status;
-    res.send(JSON.stringify(taObj.longlist[status]));
+    res.send(JSON.stringify(taObj.tas[status]));
 };
 /*
 exports.addOne = function(req, res) {

@@ -16,6 +16,10 @@
     height: 40px;
     
 }
+
+table, td {
+    border: 1px solid black;
+}
 /*
 .header {
     float: left;

@@ -1,5 +1,6 @@
 $(document).ready(function() {
     $('#getTa').click(buildTable());
+})
 
 
 
@@ -9,7 +10,7 @@ function buildTable(){
     $.get('applicants',function(data){
         let table = $('#table');
         let taObj = JSON.parse(data);
-        let taAry = taObj.longlist;
+        let taAry = taObj.tas;
         for( let i = 0; i< taAry.length; i++){
             let row = $('<tr>').append(
             $('<td>').text(taAry[i].givenname),
@@ -20,9 +21,4 @@ function buildTable(){
             table.append(row);
         }
      });
-}
-
-buildTable();
-console.log("um");
-
 }
