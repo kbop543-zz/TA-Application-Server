@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Teaching Assistants Server</title>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="scripts/routes.js"></script>
+</head>
+
+<body>
+<header>
+<a class="header">Teaching Assistants Server</a>
+</header>
+    
+    <div id="applicant-list">
+      <p>Get all applicants ordered by Family Name.</p>
+      <input type="button" name="ta" id="ta" value="Get Applicants" />
+       <p>Get all applicants with a given status.</p>
+       <input name="status" type="text" id="status" size="63" />
+      <input type="button" name="taStatus" id="taStatus " value="Get Applicants" />
+    </div>
+ 
+
+<div id="wrapper">
+    <div id="menu">
+        <p class="welcome">Welcome, <b><span class="name"></span></b></p>
+        <input type="button" class="logout" name="pause" id="pause" value="Stop Updates" />
+        <input type="button" class="logout" name="logout" id="logout" value="Forget me" />
+        <div style="clear:both"></div>
+    </div>
+     
+    <div id="chatbox"></div>
+     
+    <form name="message" action="">
+        <input name="usermsg" type="text" id="usermsg" size="63" />
+        <input name="submitmsg" type="button"  id="submitmsg" value="Send" />
+    </form>
+</div>
+
+</body>
