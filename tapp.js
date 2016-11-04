@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var bodyParser = require('body-parser');
 var ta = require('./routes');
@@ -21,7 +23,11 @@ app.get('/', function(req, res) {
 
 app.get('/applicants', ta.findAll);
 
-app.get('/applicants?status?status=status', ta.findByStatus);
+app.post('/applicants', ta.addOne);
+
+/*app.get('/applicants?status?status=status', ta.findByStatus);
+
+app.get('/applicants?fname=fname', ta.findByName);*/
 
 
 // Start the server

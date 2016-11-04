@@ -1,22 +1,105 @@
+'use strict';
+
 var fs = require('fs');
 
-// Putting the data in this file is a hack. Even when using
-// a json file as data, we should really put the data management
-// in a file separate from the routes file.
 var taObj;
-fs.readFile('tas.json', 'utf-8', function(err, data) {
+fs.readFile('turing_tas.json', 'utf-8', function(err, data) {
     if(err) throw err;
     taObj = JSON.parse(data);
 });
 
 
 exports.findAll = function(req, res) {
-    res.send(JSON.stringify(taObj));
-};
+
+
+    if (req.query.status){
+        exports.findByStatus();
+    }
+    if (req.query.familyname){
+        exports.findByName();
+    }
+
+    var temp = '{"tas" : [';
+
+    var size = taObj.tas.length;
+    
+    for( let i = 0; i< taObj.tas.length-1; i++){
+         temp = temp + 
+        ' {'+ 
+            ' "stunum" :'+ ' " '+taObj.tas[i].stunum + ' " ,'+
+            ' "givenname" :'+ ' " '+taObj.tas[i].givenname + ' " ,'+
+            ' "familyname" :'+' " '+taObj.tas[i].familyname + ' " ,'+
+            ' "status" :' +' " '+taObj.tas[i].status + ' " ,' +
+            ' "year" :' +' " '+taObj.tas[i].year + ' " '+ '} ,';
+    }
+    // get the last element without a comma seperating the fields
+    temp = temp + 
+        ' {'+ 
+            ' "stunum" :'+ ' " '+taObj.tas[size-1].stunum + ' " ,'+
+            ' "givenname" :'+ ' " '+taObj.tas[size-1].givenname + ' " ,'+
+            ' "familyname" :'+' " '+taObj.tas[size-1].familyname + ' " ,'+
+            ' "status" :' +' " '+taObj.tas[size-1].status + ' " ,' +
+            ' "year" :' +' " '+taObj.tas[size-1].year + ' " '+ '} ';
+    temp = temp + ']' +' }';
+    //var tempp = JSON.parse(temp);
+    res.send(JSON.parse(temp));
+    //res.send(temp);
+
+}
 
 exports.findByStatus = function(req, res) {
-    var status = req.params.status;
-    res.send(JSON.stringify(taObj.tas[status]));
+    var status = req.query.status;
+
+    var temp = '{"tas": [';
+    
+    for( let i = 0; i< taObj.length; i++){
+        if(taObj[i].status == status){
+            temp = temp + 
+        '{'+ 
+            " stunum : "+ taObj[i].stunum+
+            " givenname : "+ taObj[i].givenname+
+            " familyname : "+taObj[i].familyname+
+            " status: " +taObj[i].status,
+            " year: " +taObj[i].year+
+        '}'
+    }
+}
+    temp = temp + ' ] '+'}';
+    
+    res.send(JSON.stringify(temp));
+}
+
+exports.findByName = function(req, res) {
+    var name = req.query.familyname;
+
+    var temp = '{"tas": [';
+    
+    for( let i = 0; i< taObj.length; i++){
+        if(taObj[i].familyname == name){
+            temp = temp + 
+        '{'+ 
+            " stunum : "+ taObj[i].stunum+
+            " givenname : "+ taObj[i].givenname+
+            " familyname : "+taObj[i].familyname+
+            " status: " +taObj[i].status,
+            " year: " +taObj[i].year+
+        '}'
+    }
+}
+    temp = temp + ' ] '+'}';
+    
+    res.send(JSON.stringify(temp));
+    
+}
+
+exports.addOne = function(req, res) {
+    console.log(req.body);
+    var newTA = req.body;
+    
+    taObj.longlist.push(newTA);
+    console.log("Success:");
+    console.log(JSON.stringify(taObj));
+    res.send("Success");
 };
 /*
 exports.addOne = function(req, res) {
@@ -67,4 +150,3 @@ exports.delById = function(req, res) {
     res.send("Success");
 };
 */
-
