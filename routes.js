@@ -3,150 +3,427 @@
 var fs = require('fs');
 
 var taObj;
+var courseObj;
+
+/*read ta file in to get applicants*/
+
 fs.readFile('turing_tas.json', 'utf-8', function(err, data) {
     if(err) throw err;
     taObj = JSON.parse(data);
 });
 
+/*read courses file in to get courses*/
 
+fs.readFile('courses.json', 'utf-8', function(err, data) {
+    if(err) throw err;
+    courseObj = JSON.parse(data);
+});
+
+
+/*Build get all applicants response. 
+If status or name specifed, go to respective functions*/
 exports.findAll = function(req, res) {
 
 
     if (req.query.status){
-        exports.findByStatus();
+        exports.findByStatus(req.query.status,res);
     }
-    if (req.query.familyname){
-        exports.findByName();
-    }
+    else if (req.query.fname){
+        exports.findByName(req.query.fname,res);
+    }else{
 
-    var temp = '{"tas" : [';
-
-    var size = taObj.tas.length;
+    var tempTA = [];
     
-    for( let i = 0; i< taObj.tas.length-1; i++){
-         temp = temp + 
-        ' {'+ 
-            ' "stunum" :'+ ' " '+taObj.tas[i].stunum + ' " ,'+
-            ' "givenname" :'+ ' " '+taObj.tas[i].givenname + ' " ,'+
-            ' "familyname" :'+' " '+taObj.tas[i].familyname + ' " ,'+
-            ' "status" :' +' " '+taObj.tas[i].status + ' " ,' +
-            ' "year" :' +' " '+taObj.tas[i].year + ' " '+ '} ,';
+
+    for( let i = 0; i< taObj.tas.length; i++){
+        tempTA.push({
+            "stunum" : taObj.tas[i].stunum,
+            "givenname" : taObj.tas[i].givenname,
+            "familyname" : taObj.tas[i].familyname,
+            "status" : taObj.tas[i].status,
+            "year" : taObj.tas[i].year});
     }
-    // get the last element without a comma seperating the fields
-    temp = temp + 
-        ' {'+ 
-            ' "stunum" :'+ ' " '+taObj.tas[size-1].stunum + ' " ,'+
-            ' "givenname" :'+ ' " '+taObj.tas[size-1].givenname + ' " ,'+
-            ' "familyname" :'+' " '+taObj.tas[size-1].familyname + ' " ,'+
-            ' "status" :' +' " '+taObj.tas[size-1].status + ' " ,' +
-            ' "year" :' +' " '+taObj.tas[size-1].year + ' " '+ '} ';
-    temp = temp + ']' +' }';
-    //var tempp = JSON.parse(temp);
-    res.send(JSON.parse(temp));
-    //res.send(temp);
+
+    var temp = {"tas" : tempTA };
+    
+
+    res.send(temp);
+}
+    
 
 }
 
-exports.findByStatus = function(req, res) {
-    var status = req.query.status;
+/*build response for get TA by status*/
 
-    var temp = '{"tas": [';
+exports.findByStatus = function(status,res) {
+
+
+
+       var tempTA = [];
     
-    for( let i = 0; i< taObj.length; i++){
-        if(taObj[i].status == status){
-            temp = temp + 
-        '{'+ 
-            " stunum : "+ taObj[i].stunum+
-            " givenname : "+ taObj[i].givenname+
-            " familyname : "+taObj[i].familyname+
-            " status: " +taObj[i].status,
-            " year: " +taObj[i].year+
-        '}'
+
+    for( let i = 0; i< taObj.tas.length; i++){
+        if(status.toUpperCase() == taObj.tas[i].status.toUpperCase()){
+        tempTA.push({
+            "stunum" : taObj.tas[i].stunum,
+            "givenname" : taObj.tas[i].givenname,
+            "familyname" : taObj.tas[i].familyname,
+            "status" : taObj.tas[i].status,
+            "year" : taObj.tas[i].year});
+    }
+    }
+
+    var temp = {"tas" : tempTA };
+    
+
+    res.send(temp);
+}
+
+/*build response for get TA by name*/
+
+exports.findByName = function(name, res) {
+     var tempTA = [];
+
+    
+
+    for( let i = 0; i< taObj.tas.length; i++){
+        if(name.toUpperCase() == taObj.tas[i].familyname.toUpperCase()){
+        tempTA.push({
+            "stunum" : taObj.tas[i].stunum,
+            "givenname" : taObj.tas[i].givenname,
+            "familyname" : taObj.tas[i].familyname,
+            "status" : taObj.tas[i].status,
+            "year" : taObj.tas[i].year,
+            "courses" : taObj.tas[i].courses});
     }
 }
-    temp = temp + ' ] '+'}';
-    
-    res.send(JSON.stringify(temp));
-}
 
-exports.findByName = function(req, res) {
-    var name = req.query.familyname;
 
-    var temp = '{"tas": [';
+    var temp = {"tas" : tempTA };
     
-    for( let i = 0; i< taObj.length; i++){
-        if(taObj[i].familyname == name){
-            temp = temp + 
-        '{'+ 
-            " stunum : "+ taObj[i].stunum+
-            " givenname : "+ taObj[i].givenname+
-            " familyname : "+taObj[i].familyname+
-            " status: " +taObj[i].status,
-            " year: " +taObj[i].year+
-        '}'
-    }
-}
-    temp = temp + ' ] '+'}';
-    
-    res.send(JSON.stringify(temp));
+
+    res.send(temp.tas[0]);
     
 }
 
-exports.addOne = function(req, res) {
-    console.log(req.body);
+/*use req body to add a TA
+Also validate if status is correct and course exists*/
+
+exports.addOne = function(req, res,next) {
+    var errorStunumFlag = false;
+    var errorCourseFlag = false;
+    var errorStatFlag = false;
+    var errorCourseOnlyFlag = false;
+    
     var newTA = req.body;
-    
-    taObj.longlist.push(newTA);
-    console.log("Success:");
-    console.log(JSON.stringify(taObj));
-    res.send("Success");
-};
-/*
-exports.addOne = function(req, res) {
-    console.log(req.body);
-    var newBook = req.body;
-    
-    bookObj.longlist.push(newBook);
-    console.log("Success:");
-    console.log(JSON.stringify(bookObj));
-    res.send("Success");
-};
-*/
-/* NOTE:  I was fixed the bug that prevented delete from working correctly in 
- * class (and I was clearly hallucinating when I "thought it worked" the night before.
- * The bug was the result of two mistakes.  I did not set up the ajax 
- * request correctly in showBooks.js, and I didn't turn the string into an int
- * before using it to index into the array.
- */
 
-/* While I was thinking about different ways to pass the index of the boox
- * to delete, I realized that my original approach was not RESTful.  I have
- * reimplmented the delete function so that it includes the id as part of the
- * resource.  (See showBooks.js)
- */
+   
 
-/*  The original fixed but non-RESTful version of delete
+    var tempTA = [];
+    var course =[];
+
+    if(newTA.rank.length == 1){
+    for(let j=0;j<courseObj.courses.length;j++){
+        if(courseObj.courses[j].toUpperCase() == newTA.code.toUpperCase()){
+            errorCourseOnlyFlag = true;
+        }
+    }}else{
+
+
+    for(let k = 0; k< newTA.code.length;k++){
+        for(let j=0;j<courseObj.courses.length;j++){
+        if(courseObj.courses[j].toUpperCase() ===newTA.code[k].toUpperCase()){
+            errorCourseFlag = true;
+        }
+        
+    }
+}
+}
+
+
+    if( newTA.status.toUpperCase() == "UNDERGRAD" ||
+        newTA.status.toUpperCase() =="MSS" ||
+        newTA.status.toUpperCase() == "PHD" ||
+        newTA.status.toUpperCase() == "MSCAC" ||
+        newTA.status.toUpperCase() =="MEND"){
+        errorStatFlag = true;
+    };
+
+  
+
+    for(let i=0; i<taObj.tas.length;i++){
+            if(taObj.tas[i].stunum == newTA.stunum){
+
+                errorStunumFlag= true;
+            }   
+        }
+
+
+
+        if(errorStunumFlag){
+            
+            res.status(500).send("Error: duplicate student number");
+        } else if(!errorCourseFlag && !errorCourseOnlyFlag){
+            res.status(500).send("Error: that course code doesn't exist");
+        }
+        else if(!errorStatFlag ){
+            res.status(500).send("Error: that status doesn't exist");
+        }else{
+
+            if(errorCourseOnlyFlag){
+                course.push({
+                    "code": newTA.code,
+                    "rank": newTA.rank,
+                    "experience": newTA.experience
+                });
+            }else{
+
+            
+                for(let j = 0; j< newTA.code.length;j++){
+                course.push({
+                    "code": newTA.code[j],
+                    "rank": newTA.rank[j],
+                    "experience": newTA.experience[j]
+                });
+            }
+            }
+
+            tempTA.push({
+                "stunum" : newTA.stunum,
+                "givenname" : newTA.givenname,
+                "familyname" : newTA.familyname,
+                "status" : newTA.status,
+                "year" : newTA.year,
+                "courses": course
+            });
+            req.body = tempTA;
+
+            var temp = {"tas" : tempTA };
+
+            taObj.tas.splice(0,1,temp.tas[0]);
+
+
+            res.send("Success");
+        
+    }
+
+    }
+
+/*delete a TA. If name or status specified go 
+to respective functions*/
 exports.delOne = function(req, res) {
-    console.log(req.body);
-    // req.body.num gives us the value of the field with the key "num"
-    // parseInt turns it into a string
-    var num = parseInt(req.body.num);
+    
 
-    // Deleting an element from a JS array leaves an "undefined" hole,
-    // it doesn't shift elements over.  Splice allows you to remove
-    // an element from the array
-    bookObj.longlist.splice(num-1,1);
-    console.log("Success:");
-    console.log(JSON.stringify(bookObj));
+
+    if (req.query.fname){
+        exports.delByFname(req.query.fname,res);
+    }
+    else if (req.query.stunum){
+        exports.delByStunum(req.query.stunum,res);
+    }
+}
+
+/*delete ta by name. Check if student actually exists*/
+
+exports.delByFname = function(name, res) {
+    var flag = false;
+
+    var indexToDel;
+
+    for( let i = 0; i< taObj.tas.length; i++){
+        if(name.toUpperCase() == taObj.tas[i].familyname.toUpperCase()){
+            indexToDel = i;
+            flag = true;
+        }
+    }
+    if(!flag){
+        res.status(500).send("Error: no such student");
+    }else{
+
+    taObj.tas.splice(indexToDel,1);
+
     res.send("Success");
+}
 };
 
+/*delete ta by student name. Check if student exists*/
 
-exports.delById = function(req, res) {
-    var id = parseInt(req.params.id);
-    bookObj.longlist.splice(id-1,1);
-    console.log("Success:");
-    console.log(JSON.stringify(taObj))
+exports.delByStunum = function(stunum, res) {
+    var flag=false;
+    var indexToDel;
+
+    for( let i = 0; i< taObj.tas.length; i++){
+        if(stunum == taObj.tas[i].stunum){
+            indexToDel = i;
+            flag = true;
+        }
+    }
+    if(!flag){
+        res.status(500).send("Error: no such student");
+    }else{
+
+    taObj.tas.splice(indexToDel,1);
+
     res.send("Success");
+}
 };
-*/
+
+/*Build response with all TAs and the courses they applied to*/
+
+exports.findWithCourses = function(req, res) {
+
+
+    if (req.query.course){
+        exports.findByCourse(req.query.course,res);
+    }else{
+
+    var tempCour = [];
+    var tempTA = []
+    
+for( let j = 0; j< courseObj.courses.length; j++){
+
+    for( let i = 0; i< taObj.tas.length; i++){
+        for(let k = 0; k<taObj.tas[i].courses.length;k++){
+            if(courseObj.courses[j] === taObj.tas[i].courses[k].code){
+
+                tempTA.push({
+                    "code": courseObj.courses[j],
+                    "stunum" : taObj.tas[i].stunum,
+                    "givenname" : taObj.tas[i].givenname,
+                    "familyname" : taObj.tas[i].familyname,
+                    "status" : taObj.tas[i].status,
+                    "year" : taObj.tas[i].year,
+                    "ranking" : taObj.tas[i].courses[k].rank,
+                    "experience" : taObj.tas[i].courses[k].experience,
+                });
+
+            }
+            
+        }
+
+    }
+    
+}
+for( let j = 0; j< courseObj.courses.length; j++){
+    tempCour.push({
+                    "code": courseObj.courses[j],
+                    "tas" : []
+                });
+}
+
+
+for( let j = 0; j< tempCour.length; j++){
+    for(let i=0;i<tempTA.length;i++){
+        if(tempCour[j].code ==tempTA[i].code)
+            tempCour[j].tas.push({
+                "stunum" : tempTA[i].stunum,
+                    "givenname" : tempTA[i].givenname,
+                    "familyname" : tempTA[i].familyname,
+                    "status" : tempTA[i].status,
+                    "year" : tempTA[i].year,
+                    "ranking" : tempTA[i].ranking,
+                    "experience" : tempTA[i].experience,
+            })
+    }
+    
+}
+    
+
+
+
+    var tempCourse = {"courses" : tempCour };
+
+
+
+
+
+    res.send(JSON.stringify(tempCourse));
+}
+    
+}
+
+/*Build response with all TAs by user specifed course they applied to*/
+
+exports.findByCourse = function(course, res) {
+
+    var tempCour = [];
+    var tempTA = []
+    
+for( let j = 0; j< courseObj.courses.length; j++){
+
+    for( let i = 0; i< taObj.tas.length; i++){
+        for(let k = 0; k<taObj.tas[i].courses.length;k++){
+            if(courseObj.courses[j].toUpperCase() === taObj.tas[i].courses[k].code.toUpperCase()){
+
+                tempTA.push({
+                    "code": courseObj.courses[j],
+                    "stunum" : taObj.tas[i].stunum,
+                    "givenname" : taObj.tas[i].givenname,
+                    "familyname" : taObj.tas[i].familyname,
+                    "status" : taObj.tas[i].status,
+                    "year" : taObj.tas[i].year,
+                    "ranking" : taObj.tas[i].courses[k].rank,
+                    "experience" : taObj.tas[i].courses[k].experience,
+                });
+
+            }
+            
+        }
+
+    }
+    
+}
+for( let j = 0; j< courseObj.courses.length; j++){
+    tempCour.push({
+                    "code": courseObj.courses[j],
+                    "tas" : []
+                });
+}
+
+
+for( let j = 0; j< tempCour.length; j++){
+    for(let i=0;i<tempTA.length;i++){
+        if(tempCour[j].code.toUpperCase() ==tempTA[i].code.toUpperCase())
+            tempCour[j].tas.push({
+                "stunum" : tempTA[i].stunum,
+                    "givenname" : tempTA[i].givenname,
+                    "familyname" : tempTA[i].familyname,
+                    "status" : tempTA[i].status,
+                    "year" : tempTA[i].year,
+                    "ranking" : tempTA[i].ranking,
+                    "experience" : tempTA[i].experience,
+            })
+    }
+    
+}
+    
+
+
+
+    var tempCourse = {"courses" : tempCour };
+
+
+    var flag = false;
+
+    var foundCourse = []
+
+
+
+    for (let i=0;i<tempCourse.courses.length;i++){
+        if(tempCourse.courses[i].code.toUpperCase() == course.toUpperCase()){
+            foundCourse = {
+                "code": tempCourse.courses[i].code,
+                "tas" : tempCourse.courses[i].tas
+            }
+            flag = true;
+        }
+    }
+
+    if(!flag){
+        res.status(500).send("Error: no such course");
+    }
+
+    res.send(JSON.stringify(foundCourse));
+    
+}
+

@@ -1,20 +1,145 @@
+* { 
+    box-sizing: border-box;
+ 
+}
+
+
+
+table, td, th{
+    border: 1px solid black;
+
+}
+
+@media screen and (max-width: 600px) {
+
+#List{
+    padding-top: 320px;
+    overflow: hidden;
+    display:inline-block;
+}
+
 .header {
     background-color: #00CED1;
     border: none;
     color: white;
-    padding: 15px 32px;
+   padding: 10px;
+    font-size: 20px;
     text-align: center;
-    text-decoration: none;
+    width: 100%;
+    overflow: auto;
     display: block;
-    font-size: 25px;
-    margin: 4px 2px;
-    cursor: pointer;
-    width:100%;
-    height: 40px;
+    position: fixed;
+    border-style: solid;
+
+
     
 }
 
-table, td {
+
+
+nav {
+    background-color: #00CED1;
+    border: none;
+    color: white;
+   padding: 40px;
+    font-size: 90%;
+    text-align: center;
+    width: 100%;
+    overflow: auto;
+    display: block;
+    overflow: auto;
+    list-style-type: none;
+    position: fixed;
+
+    
+  
+
+
+}
+
+span div{
+     background-color: #00CED1;
+    border: none;
+    color: white;
+    padding: 25px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    font-size: 20px;
+    margin: 10px 2px;
+    cursor: pointer;
+    width:100%;
+    height: 20px;
+    display: none;
+
+
+}
+
+
+li {
+    float: none;
+    
+    overflow: auto;
+    padding:0px
+
+}
+
+li:last-child {
+    border-right: none;
+}
+
+li a {
+    overflow: auto;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 30px 0px;
+    text-decoration: none;
+
+
+}
+
+nav li a.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+nav li a:hover:not(.active) {
+    background-color: #555;
+    color: white;
+}
+
+
+
+}
+@media screen and (min-width: 600px) {
+
+div{
+    padding-top: 50px;
+    margin-left: 25%;
+    overflow: auto;
+    display:block;
+
+}
+
+.header {
+    background-color: #00CED1;
+    border: none;
+    color: white;
+   padding: 10px;
+    font-size: 20px;
+    text-align: center;
+    width: 100%;
+    overflow: auto;
+    display: block;
+    position: fixed;
+    border-style: solid;
+
+
+    
+}
+
+table, td, th{
     border: 1px solid black;
 
 }
@@ -22,29 +147,49 @@ table, td {
 nav {
     color: white;
     list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 25%;
+    margin: 0px;
+    padding: 20px;
+    padding-top:60px;
+    width: 20%;
     background-color: #00CED1;
     height: 100%; 
     position: fixed; 
     overflow: auto; 
 
+
 }
 
-nav p a {
+span div{
+    display: block;
+    color: #000;
+    padding: 16px 16px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: : bold;
+    background-color: #00CED1;
+    float:left;
+    display: none;
+
+
+}
+
+nav li a {
+    color:white;
     display: block;
     color: #000;
     padding: 8px 16px;
     text-decoration: none;
+    
 }
 
-nav p a.active {
+nav li a.active {
     background-color: #4CAF50;
     color: white;
 }
 
-nav p a:hover:not(.active) {
+nav li a:hover:not(.active) {
     background-color: #555;
     color: white;
 }
+}
+

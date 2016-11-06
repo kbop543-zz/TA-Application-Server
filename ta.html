@@ -8,83 +8,103 @@
 </head>
 
 <body>
-<nav>
-      <p><a href="#List">Applicants</a></p> 
-      <p><a href="#SearchByStat">Applicants by status</a></p>
-      <p><a href="#SearchByFamName">Search by Family Name</a></p>
-      <p><a href="#AddApplicant">Add applicant</a></p> 
-      <p><a href="#RemoveApplicant">Remove applicant</a></p>
-      <p><a href="ListWithCourses">Courses</a></p>
-      <p><a href="SearchByCourse">Search for Course</a></p>
-    </nav>
-    <div style="margin-left:25%;padding:1px 16px;height:1000px;">
+
+
+
+<span class="fixed"> <div><b> Actions  </b></div></span>
+
+<nav class ="fixed">
+      
+      <li><a href="#List">Display all Applicants</a></li> 
+      <li><a href="#SearchByStat">Search by Status</a></li>
+      <li><a href="#SearchByFamName">Search by Family Name</a></li>
+      <li><a href="#AddApplicant">Add applicant</a></li> 
+      <li><a href="#DelByFname">Remove applicant by family name</a></li>
+      <li><a href="#DelByStunumField">Remove applicant by student number</a></li>
+      <li><a href="#ListWithCourses">Display Applicants By Course</a></li>
+      <li><a href="#SearchByCourseField">Search for Course</a></li>
+</nav>
 
 <header>
-<a class="header">Teaching Assistants Server</a>
+<a class="header fixed">Teaching Assistants Server</a>
 </header>
     
+
+
+    
     <div id="List">
-      <p>Get all applicants ordered by Family Name.</p>
+      <p>Click the button below to get all applicants ordered by Family Name.</p>
       <input type="button" name="getTa" id="getTa" value="Get Applicants" /><br><br>
       <table id="table">
       <tbody>
         <tr >
-        <th scope="col">Given Name</th>
-        <th scope="col">Family Name</th>
-        <th scope="col">Status</th>
-        <th scope="col">Year</th>
+        <th >Given Name</th>
+        <th >Family Name</th>
+        <th >Status</th>
+        <th >Year</th>
         </tr>
         </tbody>
         </table>
       </div>
 
+      <hr>
+
     <div id="SearchByStat">
-       <p>Get all applicants with a given status.</p>
+       <p>Display certain applicants by specifying their statuses below.</p>
        <p>The statuses you can choose are: Undergrad,MSc,PhD,MScAC,MEng.</p>
-       <input name="status" type="text" id="status" size="63" />
+       <select id="status">
+         <option class="status" value="Undergrad">Undergrad</option>
+         <option class="status" value="MSc">MSc</option>
+         <option class="status" value="PhD">PhD</option>
+         <option class="status" value="MScAC">MScAC</option>
+         <option class="status" value="MEng">MEng</option>
+       </select>
+      <!--  <input name="status" type="text" id="status" size="63" />  -->
       <input type="button" name="getTaByStat" id="getTaByStat" value="Get Applicants" />
       <br><br>
       <table id="tableByStat">
         </table>
     </div>
 
+    <hr>
+
      <div id="SearchByFamName">
-       <p>Get a certain applicant by their family name.</p>
+       <p>Display a certain applicant by specifying their family name below.</p>
        <input name="name" type="text" id="name" size="100" />
       <input type="button" name="getTaByName" id="getTaByName" value="Get Applicant" />
-      <br><br>
       <table id="tableByName">
       </table>
       <br/><br/>
       <table id="CourseInfo">
         </table>
     </div>
+    <br>
+
+    <hr>
 
     <div id="AddApplicant">
     <p>Add an applicant by specifying the fields below.</p>
-       <form action="/signup" method="post">
+    <p>Rank, experience and year has to be numbers. Status can only be
+    Undergrad, MSc,PhD,MScAC,MEng</p>
+       <form action="/#AddApplicant" method="post" id="applicantForm">
             <!-- TAs are identifed by their student number. -->
             <div class="form_element">
                 <label id="stunumField">
                     <span class="label">Student Number:</span>
-                    <input type="text" name="stunum" pattern="[0-9]{9,10}" required></input>
-                    
-
+                    <input type="text" name="stunum" id="stunumAdd" pattern="\d*" required>
                 </label>
             </div>
 
             <div class="form_element">
                 <label id="givenField">
                     <span class="label">Given Name:</span>
-                    <input type="text" name="givenname" required></input>
-                   
-
-                </label>
+                    <input type="text" name="givenname" id="givennameAdd" required>
+                   </label>
             </div>
             <div class="form_element">
                 <label id="familyField">
                     <span class="label">Family Name:</span>
-                    <input type="text" name="familyname" required></input>
+                    <input type="text" name="familyname" id="familynameAdd" required>
                     
 
                 </label>
@@ -94,7 +114,7 @@
             <div class="form_element">
                 <label id="statusField">
                     <span class="label">Status:</span>
-                    <input type="text" name="status" pattern="{3,4,5}" required></input>
+                    <input type="text" name="status" id="stunumStatus" required>
                 
                 </label>
             </div>
@@ -102,7 +122,7 @@
             <div class="form_element">
                 <label id="yearField">
                     <span class="label">Year:</span>
-                    <input type="text" name="year" pattern="[0-9]" required></input>
+                    <input type="text" name="year" pattern="\d*" id="yearAdd" required>
                    
                 </label>
             </div>
@@ -110,25 +130,65 @@
 
             <div class="form_element">
                 <label id="courseField">
-                    <b> <span class="label">Course Info:</span></b><br>
-                    <span class="label">Course code:</span>
-                    <input type="text" name="course" required></input><br>
+                    <b> <span class="label" name="courses">Course Info:</span></b><br>
+                    <span class="label" >Course code:</span>
+                    <input type="text" name="code" class="code" required><br>
                     <span class="label">Rank:</span>
-                    <input type="text" name="rank" required></input><br>
+                    <input type="text" name="rank" class="rank" pattern="[0-9]"required><br>
                     <span class="label">Experience:</span>
-                    <input type="text" name="experience" required></input><br>
+                    <input type="text" name="experience" class="experience" pattern="\d*"required>
+                    <br><br>
               
 
                 </label>
-            </div>
-            <input type="button" name="addCourse" id="addCourse" value="Add another course" />
-
+                </div>
+                <div>
+                <input type="button" name="addCourse" id="addCourse" value="Add another course" />
+                </div>
             <div class="form_element">
                 <input id="CourseSubmitButton" type="submit" value="Submit">
             </div>
         </form>
- 
+    </div>
 
+        <hr>
 
+    <div id="DelByFname">
+       <p>Delete an applicant by specifying their family name below.</p>
+       <input name="delByname" type="text" id="delByName" size="100" />
+      <input type="button" name="delByNameButton" id="delByNameButton" value="Delete" />
+      <br><br>
+    </div>
 
+      <hr>
+
+    <div id="DelByStunumField">
+       <p>Delete an applicant by specifying their student number below.</p>
+       <input name="delByStunum" type="text" id="delByStunum" size="10" />
+      <input type="button" name="delByStunumButton" id="delByStunumButton" value="Delete" />
+      <br><br>
+    </div>
+
+      <hr>
+
+    <div id="ListWithCourses">
+      <p>Click the button below to display the applicants for all courses</p>
+      <input type="button" name="TaByCourseBtn" id="TaByCourseBtn" value="Get Applicants for all courses" /><br><br>
+      </div>
+      
+
+      <hr>
+
+    <div id="SearchByCourseField">
+       <p>Display applicants for a specifc course by specifying the course below.</p>
+       <input name="SearchByCourse" type="text" id="SearchByCourse" size="6" />
+      <input type="button" name="SearchByCourseBtn" id="SearchByCourseBtn" 
+      value="Search By Course"/>
+    </div>
+    <br>
+    <hr>
+
+    
+      
 </body>
+</html>

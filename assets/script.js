@@ -4,35 +4,50 @@ $(document).ready(function() {
     /*Set flags to false and hide the tables unless clicked*/
     var errorStatFlag = false;
     var errorNameFlag = false;
+    var addAppFlag = false;
     var statFlag = false;
     var nameFlag = false;
+    var errorAddFlag = false;
+    var errorDelNameFlag = false;
+    var errorDelStunumFlag = false;
+    var clicked =false;
     $('#table').hide();
     $('#tableByStat').hide();
     $('#tableByName').hide();
     $('#CourseInfo').hide();
+    $('#CourseTable').hide();
+    var taObj;
 
 
 
-
+/* Get all applicants */
     $('#getTa').click(function(e){
+        var table = $('#table');
+        let allRows = $('.getAllRows');
+
+        allRows.remove(); //remove table and toggle view if already clicked
+        table.toggle();
+
     
        $.get('applicants',function(data){
-        let table = $('#table');
-        let taObj = JSON.parse(data);
-        //console.log(taAry);
-        let taAry = taObj.tas;
         
-        for( let i = 0; i< taAry.length; i++){
+        
+        taObj = data.tas;
+
+        /* build table */
+        
+        for( let i = 0; i< taObj.length; i++){
             let row = $('<tr>').append(
-            $('<td>').text(taAry[i].givenname),
-            $('<td>').text(taAry[i].familyname),
-            $('<td>').text(taAry[i].status),
-            $('<td>').text(taAry[i].year)
+            $('<td>').text(taObj[i].givenname),
+            $('<td>').text(taObj[i].familyname),
+            $('<td>').text(taObj[i].status),
+            $('<td>').text(taObj[i].year)
             );
+            row.attr('class', 'getAllRows')
+
             table.append(row);
             
-            
-            $('#getTa').prop("disabled",true);
+
 
             /* Sort the table. 
             Code adapted from:
@@ -40,6 +55,7 @@ $(document).ready(function() {
             jquery-sorting-tables-alphabetically.html*/
 
             var rows = $('#table tr').get();
+
     
     
             rows.sort(function(a, b) {
@@ -60,10 +76,13 @@ $(document).ready(function() {
     
             $('#table').children('tbody').append(row);     });
             e.preventDefault();
-            $('#table').show();
+            //$('#table').show();
         };
      });
 });
+
+
+    /* Get TA by certain status*/
     $('#getTaByStat').click(function(e){
 
         if(statFlag){ 
@@ -71,17 +90,20 @@ $(document).ready(function() {
             $('.rows').remove();
         }
 
+
         let statusVal = $('#status').val();
+
+        statusVal = statusVal.toUpperCase();
         
         /*Check for invalid input*/
         if ( !statusVal ||
-            (statusVal != 'Undergrad' &&
-            statusVal != 'MSc' &&
-            statusVal != 'PhD' &&
-            statusVal != 'MScAC' &&
-            statusVal != 'MEng' )){
+            (statusVal != 'UNDERGRAD' &&
+            statusVal != 'MSC' &&
+            statusVal != 'PHD' &&
+            statusVal != 'MSCAC' &&
+            statusVal != 'MENG' )){
             var list = $("#SearchByStat");
-            var error = $('<p>').attr('id', 'error')
+            let error = $('<p>').attr('id', 'error')
             let text = document.createTextNode( "Please type a valid status in the textbar.");
             error.append(text);
             
@@ -95,13 +117,14 @@ $(document).ready(function() {
     
         }else{
     
-       $.get('applicants?status?status='+statusVal,function(data){
+       $.get('applicants?status='+statusVal,function(data){
         let table = $('#tableByStat');
-        //var status = req.query.id;
 
-        let taObj = JSON.parse(data);
-        console.log(taObj);
-        let taAry = taObj.tas;
+
+        let taAry = data.tas;
+
+        /*Build the table*/
+        
 
         let row = $('<tr>').append(
             $('<td>').text("Given Name"),
@@ -109,36 +132,41 @@ $(document).ready(function() {
             $('<td>').text("Status"),
             $('<td>').text("Year")
             );
-        row.addClass('rows')
         table.append(row);
+        row.addClass('rows')
         
+
+
         for( let i = 0; i< taAry.length; i++){
-            if(taAry[i].status == statusVal){
             let row = $('<tr>').append(
             $('<td>').text(taAry[i].givenname),
             $('<td>').text(taAry[i].familyname),
             $('<td>').text(taAry[i].status),
             $('<td>').text(taAry[i].year)
             );
-            row.addClass('rows')
             table.append(row);
+            row.addClass('rows')
+        }
 
 
             
             $('#tableByStat').show();
             statFlag = true;
             $('#error').remove();
-        }
-        }
+
      });
    }
 });
 
+/*Get TA by name */
     $('#getTaByName').click(function(e){
+
+        /*remove previous table, if exists, to get new one */
 
         if(nameFlag){ 
      
-            $('.rows').remove();
+            $('.courseRows').remove();
+
         }
 
         var nameVal = $('#name').val();
@@ -152,7 +180,7 @@ $(document).ready(function() {
             
             if(!errorNameFlag){
                 errorNameFlag = true;
-                $('.rows').remove();
+                $('.courseRows').remove();
                 list.append(error);
             }else{
             $('#error').remove();
@@ -166,10 +194,10 @@ $(document).ready(function() {
         let courseInfo = $('#CourseInfo');
         //var status = req.query.id;
 
-        let taObj = JSON.parse(data);
-        //console.log(taObj);
-        let taAry = taObj.tas;
+        let taAry = data;
 
+         
+        /*Build table */       
 
         let firstrow = $('<tr>').append(
             $('<td>').text("Given Name"),
@@ -177,25 +205,25 @@ $(document).ready(function() {
             $('<td>').text("Status"),
             $('<td>').text("Year")
             );
-        firstrow.addClass('rows')
         table.append(firstrow);
+        firstrow.addClass('courseRows')
+        
 
-        for( let i = 0; i< taAry.length; i++){
-            if(taAry[i].familyname == nameVal){
-                var NameAry = taAry[i];
+
             let nextrows = $('<tr>').append(
-            $('<td>').text(NameAry.givenname),
-            $('<td>').text(NameAry.familyname),
-            $('<td>').text(NameAry.status),
-            $('<td>').text(NameAry.year)
+            $('<td>').text(taAry.givenname),
+            $('<td>').text(taAry.familyname),
+            $('<td>').text(taAry.status),
+            $('<td>').text(taAry.year)
             );
-            nextrows.addClass('rows')
             table.append(nextrows);
-        }
-    }
+            nextrows.addClass('courseRows')
+
             
         nameFlag = true;
         $('#error').remove();
+
+        /*Build course table */  
 
         let courseTable = $('#CourseInfo');
 
@@ -206,16 +234,16 @@ $(document).ready(function() {
             $('<td>').text("Rank"),
             $('<td>').text("Experience")
             );
-        courserow.addClass('rows')
+        courserow.addClass('courseRows')
         courseTable.append(courserow);
 
-        for( let i = 0; i< NameAry.courses.length; i++){
+        for( let i = 0; i< taAry.courses.length; i++){
             let coursesrow = $('<tr>').append(
-            $('<td>').text(NameAry.courses[i].code),
-            $('<td>').text(NameAry.courses[i].rank),
-            $('<td>').text(NameAry.courses[i].experience)
+            $('<td>').text(taAry.courses[i].code),
+            $('<td>').text(taAry.courses[i].rank),
+            $('<td>').text(taAry.courses[i].experience)
             );
-            coursesrow.addClass('rows')
+            coursesrow.addClass('courseRows')
             courseTable.append(coursesrow);
 
             $('#tableByName').show();
@@ -226,9 +254,381 @@ $(document).ready(function() {
      });
    }
 });
+    /*Append more course fields if user wants to apply
+    to another course*/
+
+    $('#addCourse').click(function(e){
+        var courseField = $('#courseField');
+        let courseName = $('<input/>').attr({ type: 'text', class: 'code', name: 'code'});
+        let rank = $('<input/>').attr({ type: 'text', class: 'rank', name: 'rank' ,pattern: '[0-9]'});
+        let experience =$('<input/>').attr({ type: 'text', class: 'experience'
+            , name: 'experience', pattern: '[0-9]' });
+        courseField.append("Course code:");
+        courseField.append(courseName);
+        courseField.append("<br/>");
+        courseField.append("Rank:");
+        courseField.append(rank);
+        courseField.append("<br/>");
+        courseField.append("Experience:");
+        courseField.append(experience);
+        courseField.append("<br/>");
+        courseField.append("<br/>")
+        }); 
+
+    /*If user presses course submit button send it off and 
+    check for errors*/
+
+    $('#applicantForm').submit(function(){
+       
+        sendForm();
+        return false;
+    })
+        
+        /*Check for errors and build JSON .
+        Code adapted from 
+        http://stackoverflow.com
+        /questions/1184624/convert
+        -form-data-to-javascript-
+        object-with-jquery*/
+
+$.fn.serializeObject = function()
+{
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
+
+
+    function sendForm(){
+        let formData = $('form').serializeArray();
+
+    
+        $.post('/applicants', formData,function(data){
+            if(!addAppFlag){
+            addAppFlag = true;
+            $('#AddApplicant').append("Applicant has been sent for submission!");
+            
+        }
+        })
+        .fail(function(response){
+            
+            alert(response.responseText);
+            
+
+        });
+
+    }
+
+    /*Delete applicant by family name*/
+
+    $("#delByNameButton").click(function (e) {
+        e.preventDefault();
+        let name = $('#delByName').val();
+        
+        /*delete user messges if they are there*/
+        $('#delByNameError').remove();
+        $('#delStunumMsg').remove();
+
+        /*if User submitted an empty field*/
+
+        if ( !name){
+            var list = $("#DelByFname");
+            var error = $('<div>').attr('id', 'delByNameError')
+            let text = document.createTextNode("You can not submit an empty field.");
+            error.append(text);
+            
+
+                list.append(error);
+        }else{
+        $.ajax({
+            
+            url: '/applicants?fname=' + name,
+            type: 'DELETE',
+            success: function result() {
+                if(!errorDelNameFlag){
+                errorDelNameFlag = true;
+                let msg = $('<div>').attr('id', 'delStunumMsg')
+                let text = document.createTextNode("Applicant has been deleted.");
+                msg.append(text);
+                $('#DelByFname').append(msg);
+                
+            }},
+            error: function(response){
+                alert(response.responseText);
+            }
+        });
+    }
+
+    });
+
+    /*Delete applicant by student name*/
+
+    $("#delByStunumButton").click(function (e) {
+        e.preventDefault();
+        let stunum = $('#delByStunum').val();
+/*delete user messges if they are there*/
+        $('#delByStunumError').remove();
+        $('#delStunumMsg').remove();
+
+        if ( !stunum){
+            var list = $("#DelByStunumField");
+            var error = $('<div>').attr('id', 'delByStunumError')
+            let text = document.createTextNode("You can not submit an empty field.");
+            error.append(text);
+            
+
+                list.append(error);
+        }else{
+
+        $.ajax({
+            
+            url: '/applicants?stunum=' + stunum,
+            type: 'DELETE',
+            success: function result() {
+                if(!errorDelStunumFlag){
+                errorDelStunumFlag = true;
+                let msg = $('<div>').attr('id', 'delStunumMsg')
+                let text = document.createTextNode("Applicant has been deleted.");
+                msg.append(text);
+                $('#DelByStunumField').append(msg);
+                
+            }},
+            error: function(response){
+                alert(response.responseText);
+            }
+            
+        });
+    }
+
+    });
+
+    /*Get all TAs seperated by courses*/
+
+    $('#TaByCourseBtn').click(function(e){
 
 
 
+        var field = $('#ListWithCourses');
+
+        if(clicked){
+            
+            $('.courseTable').toggle();
+            return;
+
+        }
+
+        
+    
+       $.get('courses',function(data){
+        
+        $('.courseTable').toggle();
+        
+        
+        var courseAry = JSON.parse(data);
+        var courseObj = courseAry.courses;
+        
+        var field = $('#ListWithCourses');
+
+
+        
+        for( let i = 0; i< courseObj.length; i++){
+            let title = $('<span>').attr('class', 'courseTable')
+            let text = document.createTextNode(courseObj[i].code);
+            title.append(text);
+            
+            field.append(title);
+            field.append("<br/>");
+
+            var course = courseObj[i].tas;
+            clicked = true;
+
+            /*Build the table*/
+
+            var table = $('<table></table>').attr('class', 'courseTable');
+            table.attr('id',courseObj[i].code);
+            table.append("<tbody></tbody>");
+            
+            let header = $('<tr>').append(
+            $('<th>').text("Ranking"),
+            $('<th>').text("Experience"),
+            $('<th>').text("Status"),
+            $('<th>').text("Given Name"),
+            $('<th>').text("Familyname")
+            );
+            header.attr('class','courseTable');
+
+            table.append(header);
+
+            for( let j = 0; j< course.length; j++){
+
+            let row = $('<tr>').append(
+            $('<td>').text(course[j].ranking),
+            $('<td>').text(course[j].experience),
+            $('<td>').text(course[j].status),
+            $('<td>').text(course[j].givenname),
+            $('<td>').text(course[j].familyname)
+            );
+            row.attr('class','courseTable rowsThatMatter');
+            table.append(row);
+            
+            
+
+            /* Sort the table. 
+            Code adapted from:
+            http://onwebdev.blogspot.com/2011/04/
+            jquery-sorting-tables-alphabetically.html*/
+
+            var rows = $('#'+courseObj[i].code+ ' tr').get();
+
+    
+    
+            rows.sort(function(a, b) {
+    
+            var A = $(a).children('td').eq(0).text().toUpperCase();
+            var B = $(b).children('td').eq(0).text().toUpperCase();
+      
+            if(A < B) {
+               return -1;
+            }
+      
+            if(A > B) {
+               return 1;
+             }
+      
+            return 0;     });
+            $.each(rows, function(index, row) {
+    
+            $('#'+courseObj[i].code).children('tbody').append(row);     });
+            e.preventDefault();
+
+            field.append(table);
+            
+
+        };
+    }
+     });
+});
+
+    /*Get certain TAs that applied to a certain course*/
+
+    $('#SearchByCourseBtn').click(function(e){
+
+        $('#error').remove();
+        $('.byCourseTable').remove();
+
+        
+
+        var field = $('#SearchByCourseField');
+
+        var courseName = $('#SearchByCourse').val();
+
+
+        if ( !courseName){
+            
+            var error = $('<div>').attr('id', 'error')
+            let text = document.createTextNode("Please type a valid status in the textbar.");
+            error.append(text);
+            field.append(error);
+
+    
+        }else{
+
+        
+
+        $.get('courses?course='+courseName,function(data){
+        
+        
+        var courseAry = JSON.parse(data);
+        
+
+
+        /*Build table*/
+
+        var table = $('<table></table>').attr('class', 'byCourseTable');
+            table.attr('id',courseAry.code+'one');
+            table.append("<tbody></tbody>");
+            
+            let header = $('<tr>').append(
+            $('<th>').text("Ranking"),
+            $('<th>').text("Experience"),
+            $('<th>').text("Status"),
+            $('<th>').text("Given Name"),
+            $('<th>').text("Familyname")
+            );
+            header.attr('class','byCourseTable');
+
+            table.append(header);
+
+
+            var course = courseAry.tas;
+
+
+            for( let j = 0; j< course.length; j++){
+
+            let row = $('<tr>').append(
+            $('<td>').text(course[j].ranking),
+            $('<td>').text(course[j].experience),
+            $('<td>').text(course[j].status),
+            $('<td>').text(course[j].givenname),
+            $('<td>').text(course[j].familyname)
+            );
+            row.attr('class','byCourseTable ');
+            table.append(row);
+            
+            
+
+            /* Sort the table. 
+            Code adapted from:
+            http://onwebdev.blogspot.com/2011/04/
+            jquery-sorting-tables-alphabetically.html*/
+
+            var rows = $('#'+courseAry.code+ 'one tr').get();
+
+    
+    
+            rows.sort(function(a, b) {
+    
+            var A = $(a).children('td').eq(0).text().toUpperCase();
+            var B = $(b).children('td').eq(0).text().toUpperCase();
+      
+            if(A < B) {
+               return -1;
+            }
+      
+            if(A > B) {
+               return 1;
+             }
+      
+            return 0;     });
+            $.each(rows, function(index, row) {
+    
+            $('#'+courseAry.code+'one').children('tbody').append(row);     });
+            e.preventDefault();
+
+            field.append(table);
+        
+        }
+
+        })
+        .fail(function(response){
+            
+            alert(response.responseText);
+
+        });
+    }
+     });
+
+        
 });
 
 

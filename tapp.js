@@ -25,9 +25,9 @@ app.get('/applicants', ta.findAll);
 
 app.post('/applicants', ta.addOne);
 
-/*app.get('/applicants?status?status=status', ta.findByStatus);
+app.delete('/applicants', ta.delOne);
 
-app.get('/applicants?fname=fname', ta.findByName);*/
+app.get('/courses', ta.findWithCourses);
 
 
 // Start the server
