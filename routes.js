@@ -122,7 +122,7 @@ exports.addOne = function(req, res,next) {
     var tempTA = [];
     var course =[];
 
-    if(newTA.rank.length == 1){
+    if(newTA.experience.length == 1){
     for(let j=0;j<courseObj.courses.length;j++){
         if(courseObj.courses[j].toUpperCase() == newTA.code.toUpperCase()){
             errorCourseOnlyFlag = true;
@@ -200,7 +200,7 @@ exports.addOne = function(req, res,next) {
 
             var temp = {"tas" : tempTA };
 
-            taObj.tas.splice(0,1,temp.tas[0]);
+            taObj.tas.push(temp.tas[0]);
 
 
             res.send("Success");

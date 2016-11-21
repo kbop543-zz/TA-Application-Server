@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teaching Assistants Server</title>
     <link type="text/css" rel="stylesheet" href="style.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -84,7 +86,7 @@
 
     <div id="AddApplicant">
     <p>Add an applicant by specifying the fields below.</p>
-    <p>Rank, experience and year has to be numbers. Status can only be
+    <p>Rank, experience and year has to be numbers. Experience has to be one number. Status can only be
     Undergrad, MSc,PhD,MScAC,MEng</p>
        <form action="/#AddApplicant" method="post" id="applicantForm">
             <!-- TAs are identifed by their student number. -->
@@ -134,9 +136,9 @@
                     <span class="label" >Course code:</span>
                     <input type="text" name="code" class="code" required><br>
                     <span class="label">Rank:</span>
-                    <input type="text" name="rank" class="rank" pattern="[0-9]"required><br>
+                    <input type="text" name="rank" class="rank" pattern="\d*"required><br>
                     <span class="label">Experience:</span>
-                    <input type="text" name="experience" class="experience" pattern="\d*"required>
+                    <input type="text" name="experience" class="experience" pattern="[0-9]"required>
                     <br><br>
               
 

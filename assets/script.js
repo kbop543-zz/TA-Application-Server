@@ -422,10 +422,11 @@ $.fn.serializeObject = function()
 
         if(clicked){
             
-            $('.courseTable').toggle();
+            $('.courseTable').remove();
+            clicked = false;
             return;
 
-        }
+        }else{
 
         
     
@@ -447,7 +448,7 @@ $.fn.serializeObject = function()
             title.append(text);
             
             field.append(title);
-            field.append("<br/>");
+            title.append("<br/>");
 
             var course = courseObj[i].tas;
             clicked = true;
@@ -517,6 +518,7 @@ $.fn.serializeObject = function()
         };
     }
      });
+   }
 });
 
     /*Get certain TAs that applied to a certain course*/
@@ -536,7 +538,7 @@ $.fn.serializeObject = function()
         if ( !courseName){
             
             var error = $('<div>').attr('id', 'error')
-            let text = document.createTextNode("Please type a valid status in the textbar.");
+            let text = document.createTextNode("Please type a valid course code in the textbar.");
             error.append(text);
             field.append(error);
 
