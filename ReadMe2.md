@@ -7,7 +7,7 @@ Overview of what I did
 -I have made sure to validate the data on the server side by checking if the course exists through the course.json file
 -Made student number 
 
-- I put number only constraints on year, rank, experience 
+-I put number only constraints on year, rank, experience 
 
 -I made sure that when the user enters ANYTHING that it is case sensitive
 
